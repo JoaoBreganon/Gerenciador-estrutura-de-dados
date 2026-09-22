@@ -45,19 +45,33 @@ lista* liberalista(lista*L){
     return NULL;
 }
 
-
-no* AuxInsere(no*antigo,Manutencao aux){
-    no *novo;
+no *InsereOrdenado(no *antigo,Manutencao var )
+{
+    no *novo,*aux,*aux1;
     novo=(no*)malloc(sizeof(no));
-    novo->info=aux;
-    novo->prox=antigo;
-    return novo;
+    novo->info=var;
+    novo = antigo;
+    aux = NULL;
+    aux1= antigo;
+    while (aux1 !=NULL && var.cod_solicitacao < aux1->info.cod_solicitacao)
+    {
+        aux = aux1;
+        aux1 = aux1->prox;
+    }
+    if(aux == NULL){
+        novo->prox=aux1;
+        antigo = novo;
+        return antigo;
+    }
+    aux->prox= novo;
+    novo->prox= aux1;
+    return antigo;
+
 }
 
 
 void inserirSolitacao(lista*l){
     Manutencao aux;
-    no *Naux;
     printf("Digite o código de solicitação:");
     scanf("%d",aux.cod_solicitacao);
    
@@ -73,12 +87,40 @@ void inserirSolitacao(lista*l){
     printf("\nDigite o período necessário para manutenção:");
     scanf("%d",aux.periodo);
     
-    Naux=l->inicio;
-    while (aux.cod_solicitacao)
-    {
-        /* code */
-    }
-    
-    l->inicio= AuxInsere(l->inicio, aux);
+    l->inicio = InsereOrdenado(l->inicio,aux);
+}
 
+void Remove(lista* l){
+    if(VerificaLista(l)){
+        printf("\tLISTA VAZIA!!!!");
+    }
+    else{
+        int cod,flag=0;
+        printf("Digite o código de solicitação que deseja remover:");
+        scanf("%d",&cod);
+        no *aux = NULL, *aux1,*apag;
+        aux1 = l->inicio;
+        while (aux1 != NULL && flag != 1)
+        {
+           if(aux1->info.cod_solicitacao == cod)
+           {
+            flag = 1;
+            break;
+           }
+           aux = aux1;
+           aux1 = aux1 -> prox;
+        }
+        if(aux == NULL){
+            apag = aux1;
+            aux1 = aux1->prox;
+            free(apag);
+        }
+        else{
+            apag= aux1;
+            aux1 = aux1 -> prox;
+            aux->prox= aux1;
+            free(apag); 
+        }
+        
+    }
 }

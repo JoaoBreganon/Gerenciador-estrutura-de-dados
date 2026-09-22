@@ -3,12 +3,13 @@
 #include <locale.h>
 #include "lista.h"
 
-int main(){
+int main()
+{
     
     setlocale(LC_ALL,"portuguese");
     int escolha;
-    for(;;;){
-
+    while(escolha != 0)
+    {
         printf("====================================================");
         printf("Gerenciador de manutenção de equipamentos de um laboratório");
         printf("")
@@ -38,5 +39,6 @@ int main(){
         default:
             break;
         }
+    return 0;
     }
 }
