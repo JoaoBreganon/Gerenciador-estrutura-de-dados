@@ -45,6 +45,7 @@ lista* liberalista(lista*L){
     return NULL;
 }
 
+//Função de inserção ordenada baseada no código de solicitação 
 no *InsereOrdenado(no *antigo,Manutencao var )
 {
     no *novo,*aux,*aux1;
@@ -69,7 +70,7 @@ no *InsereOrdenado(no *antigo,Manutencao var )
 
 }
 
-
+//Função de Inserção de uma Solicitação, em que se pede as informações da tal
 void inserirSolitacao(lista*l){
     Manutencao aux;
     printf("Digite o código de solicitação:");
@@ -90,8 +91,10 @@ void inserirSolitacao(lista*l){
     l->inicio = InsereOrdenado(l->inicio,aux);
 }
 
+//Função de remoção de um elemento na lista baseado no código de solicitação, utilizando a lógica de remoção em qualquer lugar
 void Remove(lista* l){
     if(VerificaLista(l)){
+        //Temos que lembrar de implementar em todos os listas vazias a volta pro programa original
         printf("\tLISTA VAZIA!!!!");
     }
     else{
@@ -123,4 +126,67 @@ void Remove(lista* l){
         }
         
     }
+}
+
+//Função de Buscar um elemento na lista baseado no código passado por parâmetro, retornando o ponteiro apontando pra aquele elemento
+no *BuscaLista(lista *l,int cod)
+{
+    no *aux;
+    aux = l -> inicio;
+    while (aux != NULL && aux->info.cod_solicitacao != cod)
+    {
+        aux = aux -> prox;
+    }
+    return aux;
+}
+
+//Função de Printar todas as informações de um elemento, utilizando um ponteiro apontando pra ele
+void PrintaInfo(no *elemento)
+{
+    printf("\n\tCódigo de solicitação: %d",elemento -> info.cod_solicitacao);
+    printf("\n\tCódigo de equipamento %c",elemento -> info.cod_equipamento);
+    printf("\n\tNome do equipamento %c", elemento -> info.nome_equipamento);
+    printf("\n\tPrioridade do equipamento %d",elemento -> info.prioridade);
+    printf("\n\tPeríodo do equipamento %d", elemento -> info.periodo);
+    
+}
+
+//Consulta uma solicitação baseado no seu código de solicitação, utilizando conjuntamente as funções de BuscaLista e PrintaInfo
+void consulta_sol(lista *l)
+{
+    if (VerificaLista(l))
+    {
+        printf("\tLISTA VAZIA!!!!");
+    }
+    else
+    {
+        int cod;
+        no *aux;
+        printf("\n\tForneça o código de solicitação do equipamento desejado:");
+        scanf("%d",&cod);
+        aux = BuscaLista(l,cod);
+        if (aux == NULL)
+        {
+           printf("\n\tO código fornecido não existe.");
+        }
+        else
+        {
+            PrintaInfo(aux);
+        }
+    }
+}
+
+//Função que printa todas as solicitações
+void ExibirTudo(lista *l)
+{
+    no *aux;
+    aux = l -> inicio;
+    while (aux != NULL)
+    {
+        PrintaInfo(aux);
+        aux = aux -> prox;
+        printf("\n");
+    }
+    
+
 }
