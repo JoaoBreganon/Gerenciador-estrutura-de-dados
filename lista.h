@@ -73,20 +73,67 @@ no *InsereOrdenado(no *antigo,Manutencao var )
 //Função de Inserção de uma Solicitação, em que se pede as informações da tal
 void inserirSolitacao(lista*l){
     Manutencao aux;
-    printf("Digite o código de solicitação:");
-    scanf("%d",aux.cod_solicitacao);
-   
-    printf("\nDigite o código de equipamento:");
-    fgets(aux.cod_equipamento, sizeof(aux.cod_equipamento), stdin);
+
+    do{
+        printf("Digite o código de solicitação:");
+        scanf("%d",aux.cod_solicitacao);
+    }while(aux.cod_solicitacao >= 1000 && aux.cod_solicitacao <= 9999);
+
+    int contnum=0,contletter=0;
+
+    do{
+        printf("\nDigite o código de equipamento no formato adequado exemplo(AAA111):");
+        fgets(aux.cod_equipamento, sizeof(aux.cod_equipamento), stdin);
+        aux.cod_equipamento[strcspn(aux.cod_equipamento,"\n")]= '\0';
+        for (int i = 0; i < 3 ; i++) {
+            if(isalpha(aux.cod_equipamento[i])){
+                contletter++;
+            }
+        }
+        for (int i = 3; i < 6 ; i++) {
+            if (isdigit(aux.cod_equipamento[i])){
+                contnum ++;
+            }
+        }
+    }while(contnum != 3 && contletter!= 3);
 
     printf("\nDigite o nome do equipamento:");
     fgets(aux.nome_equipamento, sizeof(aux.nome_equipamento), stdin);
+    aux.nome_equipamento[strcspn(aux.nome_equipamento,"\n")]= '\0';
     
-    printf("\nDigite a prioridade:");
-    scanf("%d",aux.prioridade);
+
+    do{
+        printf("\nDigite a prioridade:");
+        scanf("%d",aux.prioridade);
+    }while(aux.prioridade <= 3 && aux.prioridade > 0);
+
+    switch(aux.prioridade)
+    {
+    case 1:
+        do{
+            printf("\nDigite o período necessário para manutenção(1-7 dias):");
+            scanf("%d",aux.periodo);
+        }while(aux.periodo<1 && aux.periodo>7);
+        break;
+
+    case 2:
+        do{
+            printf("\nDigite o período necessário para manutenção(1-15 dias):");
+            scanf("%d",aux.periodo);
+        }while(aux.periodo<1 && aux.periodo>15);
+        break;
     
-    printf("\nDigite o período necessário para manutenção:");
-    scanf("%d",aux.periodo);
+    case 3:
+        do{
+            printf("\nDigite o período necessário para manutenção(1-20 dias):");
+            scanf("%d",aux.periodo);
+        }while(aux.periodo<1 && aux.periodo>20);
+        break;
+    
+    default:
+        break;
+    }  
+    
     
     l->inicio = InsereOrdenado(l->inicio,aux);
 }
@@ -137,7 +184,11 @@ no *BuscaLista(lista *l,int cod)
     {
         aux = aux -> prox;
     }
-    return aux;
+    if(aux -> info.cod_solicitacao == cod){
+        return aux;
+    }
+    return NULL;
+    
 }
 
 //Função de Printar todas as informações de um elemento, utilizando um ponteiro apontando pra ele
@@ -175,6 +226,75 @@ void consulta_sol(lista *l)
         }
     }
 }
+//terminar essa função
+void AlteraPriPe(lista *l){
+    if(!VerificaLista(l)){
+        printf("\tLISTA VAZIA!!!!");
+    }
+    else{
+        int control,cod,troca;
+        no* aux;
+        printf("Deseja alterar");
+        printf("\n1-Alterar prioridade");
+        printf("\n2-Alterar periodo");
+        printf("\n3-Alterar prioridade e periodo");
+        printf("\n4- Sair");
+        printf("\nDigite sua opção:");
+        scanf("%d",&control);
+
+        do{
+            printf("\nDigite o código de solitação:");
+            scanf("%d",&cod);
+            aux = BuscaLista(l,cod);
+            if (aux == NULL)
+            {
+                printf("\nCódigo não foi encontrado");
+            }
+        }while(aux == NULL);
+       
+        switch (control){
+        case 1:
+            printf("\nDigite a nova prioridade:");
+            scanf("%d",&troca);
+            if(troca == aux->info.prioridade){
+                printf("Esse já é o código atual");
+            }
+            else{
+                aux->info.prioridade = troca;
+            }
+            break;
+
+        case 2:
+            printf("\nDigite a nova prioridade:");
+            scanf("%d",&troca);
+            if(troca == aux->info.prioridade){
+                printf("Esse já é o código atual");
+            }
+            else{
+                aux->info.prioridade = troca;
+            }
+            break;
+        
+        default:
+            break;
+        }
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 //Função que printa todas as solicitações
 void ExibirTudo(lista *l)
