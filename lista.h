@@ -226,74 +226,160 @@ void consulta_sol(lista *l)
         }
     }
 }
+
+void OPP(lista *l)
+{
+    int input,cod;
+    no *aux;
+    do
+    {
+        printf("\t1 - Digite o código:\n");
+        printf("\t2 - Voltar ao menu principal\n:");
+        printf("\tDigite seu input:");
+        scanf("%d",&input);
+        if (input == 1)
+        {
+            do{
+                printf("\nDigite o código de solicitação:");
+                scanf("%d",&cod);
+                aux = BuscaLista(l,cod);
+                if (aux == NULL)
+                {
+                    printf("\nCódigo não foi encontrado");
+                }
+            }while(aux == NULL);
+            
+            AlteraPriPe(l,aux);
+        }
+        if (input < 1 && input > 2)
+        {
+            printf("O seu input digitado foi errado.");
+        }
+    } while (input != 2);
+    
+}
+
 //terminar essa função
-void AlteraPriPe(lista *l){
+void AlteraPriPe(lista *l,no *aux){
     if(!VerificaLista(l)){
         printf("\tLISTA VAZIA!!!!");
     }
     else{
-        int control,cod,troca;
+        int control,troca,a = 1;
         no* aux;
-        printf("Deseja alterar");
-        printf("\n1-Alterar prioridade");
-        printf("\n2-Alterar periodo");
-        printf("\n3-Alterar prioridade e periodo");
-        printf("\n4- Sair");
-        printf("\nDigite sua opção:");
-        scanf("%d",&control);
+        do
+        {
+            printf("Deseja alterar");
+            printf("\n1-Alterar prioridade");
+            printf("\n2-Alterar periodo");
+            printf("\n3-Alterar prioridade e periodo");
+            printf("\n4- Sair");
+            printf("\nDigite sua opção:");
+            scanf("%d",&control);
 
-        do{
-            printf("\nDigite o código de solitação:");
-            scanf("%d",&cod);
-            aux = BuscaLista(l,cod);
-            if (aux == NULL)
-            {
-                printf("\nCódigo não foi encontrado");
-            }
-        }while(aux == NULL);
-       
-        switch (control){
-        case 1:
-            printf("\nDigite a nova prioridade:");
-            scanf("%d",&troca);
-            if(troca == aux->info.prioridade){
-                printf("Esse já é o código atual");
-            }
-            else{
-                aux->info.prioridade = troca;
-            }
-            break;
+            switch (control){
+            case 1:
+                printf("\nDigite a nova prioridade:");
+                scanf("%d",&troca);
+                if(troca == aux->info.prioridade){
+                    printf("Esse já é o código atual ou está fora do intervalo (1-3)");
+                    do
+                    {
+                        printf("Digite uma nova prioridade:");
+                        scanf("%d",&troca);
+                    } while (troca == aux->info.prioridade && (troca < 1 || troca > 3));
 
-        case 2:
-            printf("\nDigite a nova prioridade:");
-            scanf("%d",&troca);
-            if(troca == aux->info.prioridade){
-                printf("Esse já é o código atual");
+                }
+                else{
+                    aux->info.prioridade = troca;
+                }
+                break;
+
+            case 2:
+                printf("\nDigite o novo período:");
+                scanf("%d",&troca);
+                if(troca == aux->info.periodo){
+                    printf("Esse já é o código atual");
+                    do
+                    {
+                        printf("Digite um novo período:");
+                        scanf("%d",&troca);
+                    } while (troca == aux->info.periodo);
+                }
+                else{
+                    switch(aux -> info.prioridade)
+                    {
+                    case 1:
+                        do{
+                            printf("\nDigite o período necessário para manutenção(1-7 dias):");
+                            scanf("%d",aux -> info.periodo);
+                        }while(aux -> info.periodo<1 && aux -> info.periodo>7);
+                        break;
+
+                    case 2:
+                        do{
+                            printf("\nDigite o período necessário para manutenção(1-15 dias):");
+                            scanf("%d",aux -> info.periodo);
+                        }while(aux -> info.periodo<1 && aux -> info.periodo>15);
+                        break;
+
+                    case 3:
+                        do{
+                            printf("\nDigite o período necessário para manutenção(1-20 dias):");
+                            scanf("%d",aux -> info.periodo);
+                        }while(aux -> info.periodo<1 && aux -> info.periodo>20);
+                        break;
+
+                    default:
+                        break;
+                    }
+
+                    
+                }
+                break;
+            case 3:
+                do{
+                    printf("\nDigite a nova prioridade:");
+                    scanf("%d",aux -> info.prioridade);
+                }while(aux -> info.prioridade <= 3 && aux -> info.prioridade > 0);
+
+                switch(aux -> info.prioridade)
+                {
+                case 1:
+                    do{
+                        printf("\nDigite o período necessário para manutenção(1-7 dias):");
+                        scanf("%d",aux -> info.periodo);
+                    }while(aux -> info.periodo<1 && aux -> info.periodo>7);
+                    break;
+
+                case 2:
+                    do{
+                        printf("\nDigite o período necessário para manutenção(1-15 dias):");
+                        scanf("%d",aux -> info.periodo);
+                    }while(aux -> info.periodo<1 && aux -> info.periodo>15);
+                    break;
+
+                case 3:
+                    do{
+                        printf("\nDigite o período necessário para manutenção(1-20 dias):");
+                        scanf("%d",aux -> info.periodo);
+                    }while(aux -> info.periodo<1 && aux -> info.periodo>20);
+                    break;
+
+                default:
+                    break;
+                }
+                break;
+            case 4:
+                a = 0;
+                break;
+            default:
+                printf("Seu código está inválido");
+                break;
             }
-            else{
-                aux->info.prioridade = troca;
-            }
-            break;
-        
-        default:
-            break;
-        }
+        } while (a != 0);
     }
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
 //Função que printa todas as solicitações
