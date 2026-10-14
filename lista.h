@@ -259,7 +259,7 @@ void OPP(lista *l)
     
 }
 
-//terminar essa função
+
 void AlteraPriPe(lista *l,no *aux){
     if(!VerificaLista(l)){
         printf("\tLISTA VAZIA!!!!");
@@ -381,6 +381,83 @@ void AlteraPriPe(lista *l,no *aux){
     }
 }
 
+//Essa função ordena a lista auxiliar com base na forma que as manutenções tem de ser exibidas
+no *InsereManun(no *aux, no *antigo)
+{
+    int flag = 0;
+    no *novo,*aux1,*aux2;
+    novo = (no*)malloc(sizeof(no));
+    novo -> info = aux -> info;
+    aux1 = NULL;
+    aux2 = antigo;
+    while (aux2 != NULL)
+    {
+        flag = 0;
+        if (novo -> info.prioridade < aux2 -> info.prioridade)
+        {
+            flag = 1;
+        
+        }
+        else if (novo -> info.prioridade == aux2 -> info.prioridade)
+        {
+            if (novo -> info.periodo < aux2 -> info.periodo )
+            {
+                flag = 1;
+
+            }
+            else if (novo -> info.periodo == aux2 -> info.periodo)
+            {
+                if (novo -> info.cod_solicitacao < aux2 -> info.cod_solicitacao)
+                {
+                    flag = 1;
+                    
+                }
+            }
+        }
+        if (flag == 1)
+        {
+            break;
+        }
+        aux1 = aux2;
+        aux2 = aux -> prox;
+    }
+    if (aux1 == NULL)
+    {
+        novo -> prox = aux2;
+        antigo = novo;
+        return antigo;
+    }
+    else
+    {
+        novo -> prox = aux2;
+        aux1 -> prox = novo;
+    }
+    return antigo;
+
+}
+
+//Essa função primeiramente recebe a lista original, cria uma nova e chama a outra função pra ordenar essa nova lista baseado nos parâmetros, e por ultimo printa e da free nela
+void ExibirManun(lista *l)
+{
+    if(!VerificaLista(l)){
+        printf("\tLISTA VAZIA!!!!");
+    }
+    else
+    {
+        lista *l2 = Inicialista();
+        l2 = Criarlista();
+        no *aux = l -> inicio;
+        while (aux != NULL)
+        {
+            l2 -> inicio = InsereManun(aux, l2 -> inicio);
+            aux = aux -> prox;
+        }
+        ExibirTudo(l2);
+        free(l2);
+    }
+}
+
+
 
 //Função que printa todas as solicitações
 void ExibirTudo(lista *l)
@@ -396,3 +473,5 @@ void ExibirTudo(lista *l)
     
 
 }
+
+//Falta terminar o main, dar free no que for necessario, deixar o programa mais agradavel e corrigir bugs como um geral. 
