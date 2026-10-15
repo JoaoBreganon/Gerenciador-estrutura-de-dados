@@ -1,6 +1,6 @@
 typedef struct manutencao{
     int cod_solicitacao;
-    char cod_equipamento[6];
+    char cod_equipamento[7];
     char nome_equipamento[20];
     int prioridade;
     int periodo;
@@ -41,7 +41,7 @@ lista* liberalista(lista*L){
        L->inicio=L->inicio->prox;
        free(apag);
     }
-    free(L->inicio);
+    free(L);
     return NULL;
 }
 
@@ -51,7 +51,6 @@ no *InsereOrdenado(no *antigo,Manutencao var )
     no *novo,*aux,*aux1;
     novo=(no*)malloc(sizeof(no));
     novo->info=var;
-    novo = antigo;
     aux = NULL;
     aux1= antigo;
     while (aux1 !=NULL && var.cod_solicitacao < aux1->info.cod_solicitacao)
@@ -71,17 +70,19 @@ no *InsereOrdenado(no *antigo,Manutencao var )
 }
 
 //Função de Inserção de uma Solicitação, em que se pede as informações da tal
-void inserirSolitacao(lista*l){
+void inserirSolicitacao(lista*l){
     Manutencao aux;
 
     do{
         printf("Digite o código de solicitação:");
-        scanf("%d",aux.cod_solicitacao);
-    }while(aux.cod_solicitacao >= 1000 && aux.cod_solicitacao <= 9999);
+        scanf("%d",&aux.cod_solicitacao);
+    }while(aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999);
 
-    int contnum=0,contletter=0;
+    int contletter = 0,contnum = 0;
 
     do{
+        contletter = 0;
+        contnum = 0;
         printf("\nDigite o código de equipamento no formato adequado exemplo(AAA111):");
         fgets(aux.cod_equipamento, sizeof(aux.cod_equipamento), stdin);
         aux.cod_equipamento[strcspn(aux.cod_equipamento,"\n")]= '\0';
@@ -104,30 +105,30 @@ void inserirSolitacao(lista*l){
 
     do{
         printf("\nDigite a prioridade:");
-        scanf("%d",aux.prioridade);
-    }while(aux.prioridade <= 3 && aux.prioridade > 0);
+        scanf("%d",&aux.prioridade);
+    }while(aux.prioridade < 1 || aux.prioridade > 3);
 
     switch(aux.prioridade)
     {
     case 1:
         do{
             printf("\nDigite o período necessário para manutenção(1-7 dias):");
-            scanf("%d",aux.periodo);
-        }while(aux.periodo<1 && aux.periodo>7);
+            scanf("%d",&aux.periodo);
+        }while(aux.periodo<1 || aux.periodo>7);
         break;
 
     case 2:
         do{
             printf("\nDigite o período necessário para manutenção(1-15 dias):");
-            scanf("%d",aux.periodo);
-        }while(aux.periodo<1 && aux.periodo>15);
+            scanf("%d",&aux.periodo);
+        }while(aux.periodo<1 || aux.periodo>15);
         break;
     
     case 3:
         do{
             printf("\nDigite o período necessário para manutenção(1-20 dias):");
-            scanf("%d",aux.periodo);
-        }while(aux.periodo<1 && aux.periodo>20);
+            scanf("%d",&aux.periodo);
+        }while(aux.periodo<1 || aux.periodo>20);
         break;
     
     default:
@@ -163,6 +164,7 @@ void Remove(lista* l){
         if(aux == NULL){
             apag = aux1;
             aux1 = aux1->prox;
+            l->inicio = aux1;
             free(apag);
         }
         else{
@@ -184,7 +186,8 @@ no *BuscaLista(lista *l,int cod)
     {
         aux = aux -> prox;
     }
-    if(aux -> info.cod_solicitacao == cod){
+    if(aux -> info.cod_solicitacao == cod && aux != NULL)
+    {
         return aux;
     }
     return NULL;
@@ -195,8 +198,8 @@ no *BuscaLista(lista *l,int cod)
 void PrintaInfo(no *elemento)
 {
     printf("\n\tCódigo de solicitação: %d",elemento -> info.cod_solicitacao);
-    printf("\n\tCódigo de equipamento %c",elemento -> info.cod_equipamento);
-    printf("\n\tNome do equipamento %c", elemento -> info.nome_equipamento);
+    printf("\n\tCódigo de equipamento %s",elemento -> info.cod_equipamento);
+    printf("\n\tNome do equipamento %s", elemento -> info.nome_equipamento);
     printf("\n\tPrioridade do equipamento %d",elemento -> info.prioridade);
     printf("\n\tPeríodo do equipamento %d", elemento -> info.periodo);
     
@@ -227,6 +230,8 @@ void consulta_sol(lista *l)
     }
 }
 
+void AlteraPriPe(lista *l, no *aux);
+
 void OPP(lista *l)
 {
     int input,cod;
@@ -251,7 +256,7 @@ void OPP(lista *l)
             
             AlteraPriPe(l,aux);
         }
-        if (input < 1 && input > 2)
+        if (input < 1 || input > 2)
         {
             printf("O seu input digitado foi errado.");
         }
@@ -261,12 +266,11 @@ void OPP(lista *l)
 
 
 void AlteraPriPe(lista *l,no *aux){
-    if(!VerificaLista(l)){
+    if(VerificaLista(l)){
         printf("\tLISTA VAZIA!!!!");
     }
     else{
         int control,troca,a = 1;
-        no* aux;
         do
         {
             printf("Deseja alterar");
@@ -312,22 +316,22 @@ void AlteraPriPe(lista *l,no *aux){
                     case 1:
                         do{
                             printf("\nDigite o período necessário para manutenção(1-7 dias):");
-                            scanf("%d",aux -> info.periodo);
-                        }while(aux -> info.periodo<1 && aux -> info.periodo>7);
+                            scanf("%d",&aux -> info.periodo);
+                        }while(aux -> info.periodo<1 || aux -> info.periodo>7);
                         break;
 
                     case 2:
                         do{
                             printf("\nDigite o período necessário para manutenção(1-15 dias):");
-                            scanf("%d",aux -> info.periodo);
-                        }while(aux -> info.periodo<1 && aux -> info.periodo>15);
+                            scanf("%d",&aux -> info.periodo);
+                        }while(aux -> info.periodo<1 || aux -> info.periodo>15);
                         break;
 
                     case 3:
                         do{
                             printf("\nDigite o período necessário para manutenção(1-20 dias):");
-                            scanf("%d",aux -> info.periodo);
-                        }while(aux -> info.periodo<1 && aux -> info.periodo>20);
+                            scanf("%d",&aux -> info.periodo);
+                        }while(aux -> info.periodo<1 || aux -> info.periodo>20);
                         break;
 
                     default:
@@ -340,30 +344,30 @@ void AlteraPriPe(lista *l,no *aux){
             case 3:
                 do{
                     printf("\nDigite a nova prioridade:");
-                    scanf("%d",aux -> info.prioridade);
-                }while(aux -> info.prioridade <= 3 && aux -> info.prioridade > 0);
+                    scanf("%d",&aux -> info.prioridade);
+                }while(aux -> info.prioridade < 1 || aux -> info.prioridade > 3);
 
                 switch(aux -> info.prioridade)
                 {
                 case 1:
                     do{
                         printf("\nDigite o período necessário para manutenção(1-7 dias):");
-                        scanf("%d",aux -> info.periodo);
-                    }while(aux -> info.periodo<1 && aux -> info.periodo>7);
+                        scanf("%d",&aux -> info.periodo);
+                    }while(aux -> info.periodo<1 || aux -> info.periodo>7);
                     break;
 
                 case 2:
                     do{
                         printf("\nDigite o período necessário para manutenção(1-15 dias):");
-                        scanf("%d",aux -> info.periodo);
-                    }while(aux -> info.periodo<1 && aux -> info.periodo>15);
+                        scanf("%d",&aux -> info.periodo);
+                    }while(aux -> info.periodo<1 || aux -> info.periodo>15);
                     break;
 
                 case 3:
                     do{
                         printf("\nDigite o período necessário para manutenção(1-20 dias):");
-                        scanf("%d",aux -> info.periodo);
-                    }while(aux -> info.periodo<1 && aux -> info.periodo>20);
+                        scanf("%d",&aux -> info.periodo);
+                    }while(aux -> info.periodo<1 || aux -> info.periodo>20);
                     break;
 
                 default:
@@ -419,7 +423,7 @@ no *InsereManun(no *aux, no *antigo)
             break;
         }
         aux1 = aux2;
-        aux2 = aux -> prox;
+        aux2 = aux2 -> prox;
     }
     if (aux1 == NULL)
     {
@@ -436,10 +440,13 @@ no *InsereManun(no *aux, no *antigo)
 
 }
 
+void ExibirTudo(lista *l);
+
+
 //Essa função primeiramente recebe a lista original, cria uma nova e chama a outra função pra ordenar essa nova lista baseado nos parâmetros, e por ultimo printa e da free nela
 void ExibirManun(lista *l)
 {
-    if(!VerificaLista(l)){
+    if(VerificaLista(l)){
         printf("\tLISTA VAZIA!!!!");
     }
     else
@@ -453,6 +460,13 @@ void ExibirManun(lista *l)
             aux = aux -> prox;
         }
         ExibirTudo(l2);
+        no *apag;
+        while (l2->inicio != NULL)
+        {
+            apag = l2->inicio;
+            l2->inicio = l2->inicio->prox;
+            free(apag);
+        }
         free(l2);
     }
 }
