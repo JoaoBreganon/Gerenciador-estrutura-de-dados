@@ -9,7 +9,8 @@ int main()
 {
     lista *l = Inicialista();
     l = Criarlista();
-    setlocale(LC_ALL,"portuguese");
+    setlocale(LC_ALL,"pt_BR");
+
     int escolha = 1;
     while(escolha != 0)
     {
@@ -30,7 +31,7 @@ int main()
         case 1:
             inserirSolicitacao(l);
             break;
-        
+
         case 2:
             Remove(l);
             break;
