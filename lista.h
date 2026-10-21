@@ -69,7 +69,15 @@ no *InsereOrdenado(no *antigo,Manutencao var )
         aux = aux1;
         aux1 = aux1->prox;
     }
+
+    if (aux == NULL)
+    {
+        novo->prox=aux1;
+        antigo = novo;
+        return antigo;
+    }
     
+
     aux->prox= novo;
     novo->prox= aux1;
     return antigo;
@@ -194,6 +202,12 @@ void Remove(lista* l){
            aux = aux1;
            aux1 = aux1 -> prox;
         }
+        if (flag == 0)
+        {
+            printf("O código não foi encontrado!");
+        }
+        else
+        {
         if(aux == NULL){
             apag = aux1;
             aux1 = aux1->prox;
@@ -201,29 +215,41 @@ void Remove(lista* l){
             free(apag);
         }
         else{
+            if (flag == 1)
+            {
             apag= aux1;
             aux1 = aux1 -> prox;
             aux->prox= aux1;
             free(apag); 
+            }
+        } 
         }
-        
     }
 }
 
 //Função de Buscar um elemento na lista baseado no código passado por parâmetro, retornando o ponteiro apontando pra aquele elemento
 no *BuscaLista(lista *l,int cod)
 {
-    no *aux;
-    aux = l -> inicio;
-    while (aux != NULL && aux->info.cod_solicitacao != cod)
+    if (l == NULL || l -> inicio == NULL)
     {
-        aux = aux -> prox;
+        printf("\n\tLista vazia!");
+        return NULL;
     }
-    if(aux -> info.cod_solicitacao == cod && aux != NULL)
+    else
     {
-        return aux;
+        no *aux;
+        aux = l -> inicio;
+        while (aux != NULL && aux->info.cod_solicitacao != cod)
+        {
+            aux = aux -> prox;
+        }
+        if( aux != NULL && aux -> info.cod_solicitacao == cod)
+        {
+            return aux;
+        }
+        return NULL; 
     }
-    return NULL;
+    
     
 }
 
