@@ -3,13 +3,15 @@
 #include <locale.h>
 #include <string.h>
 #include <ctype.h>
+#include <windows.h>
 #include "lista.h"
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+    setlocale(LC_ALL,"portuguese.UTF-8");
     lista *l = Inicialista();
     l = Criarlista();
-    setlocale(LC_ALL,"pt_BR");
 
     int escolha = 1;
     while(escolha != 0)
