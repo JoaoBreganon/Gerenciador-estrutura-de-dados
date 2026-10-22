@@ -30,6 +30,9 @@ int main()
         printf("\n  Escolha uma opção: ");
         scanf("%d",&escolha);
         switch(escolha){
+        case 0:
+            printf("\nEncerrando...");
+            break;
         case 1:
             inserirSolicitacao(l);
             break;
@@ -53,6 +56,7 @@ int main()
         case 6:
             ExibirTudo(l);
             break;
+            
         default:
             printf("\n\tOpção inválida! Tente novamente.");
             break;

@@ -1,7 +1,7 @@
 typedef struct manutencao{
     int cod_solicitacao;
     char cod_equipamento[7];
-    char nome_equipamento[20];
+    char nome_equipamento[21];
     int prioridade;
     int periodo;
 }Manutencao;
@@ -137,7 +137,7 @@ void inserirSolicitacao(lista* l) {
     } while (contnum != 3 || contletter != 3);
 
     limpar_buffer();
-    printf("\nDigite o nome do equipamento:");
+    printf("\nDigite o nome do equipamento: ");
     fgets(aux.nome_equipamento, sizeof(aux.nome_equipamento), stdin);
     aux.nome_equipamento[strcspn(aux.nome_equipamento,"\n")]= '\0';
     
@@ -154,21 +154,21 @@ void inserirSolicitacao(lista* l) {
     {
     case 1:
         do{
-            printf("\nDigite o período necessário para manutenção(1-7 dias):");
+            printf("\nDigite o período necessário para manutenção (1-7 dias): ");
             scanf("%d",&aux.periodo);
         }while(aux.periodo<1 || aux.periodo>7);
         break;
 
     case 2:
         do{
-            printf("\nDigite o período necessário para manutenção(1-15 dias):");
+            printf("\nDigite o período necessário para manutenção (1-15 dias): ");
             scanf("%d",&aux.periodo);
         }while(aux.periodo<1 || aux.periodo>15);
         break;
     
     case 3:
         do{
-            printf("\nDigite o período necessário para manutenção(1-20 dias):");
+            printf("\nDigite o período necessário para manutenção (1-20 dias): ");
             scanf("%d",&aux.periodo);
         }while(aux.periodo<1 || aux.periodo>20);
         break;
@@ -188,7 +188,7 @@ void Remove(lista* l){
     }
     else{
         int cod,flag=0;
-        printf("Digite o código de solicitação que deseja remover:");
+        printf("\nDigite o código de solicitação que deseja remover: ");
         scanf("%d",&cod);
         no *aux = NULL, *aux1,*apag;
         aux1 = l->inicio;
@@ -204,25 +204,26 @@ void Remove(lista* l){
         }
         if (flag == 0)
         {
-            printf("O código não foi encontrado!");
+            printf("\nO código não foi encontrado!\n");
         }
         else
         {
-        if(aux == NULL){
-            apag = aux1;
-            aux1 = aux1->prox;
-            l->inicio = aux1;
-            free(apag);
-        }
-        else{
-            if (flag == 1)
-            {
-            apag= aux1;
-            aux1 = aux1 -> prox;
-            aux->prox= aux1;
-            free(apag); 
+            if(aux == NULL){
+                apag = aux1;
+                aux1 = aux1->prox;
+                l->inicio = aux1;
+                free(apag);
             }
-        } 
+            else{
+                if (flag == 1)
+                {
+                    apag= aux1;
+                    aux1 = aux1 -> prox;
+                    aux->prox= aux1;
+                    free(apag); 
+                }
+            } 
+            printf("\nSolicitação removida com sucesso!\n");
         }
     }
 }
@@ -257,10 +258,10 @@ no *BuscaLista(lista *l,int cod)
 void PrintaInfo(no *elemento)
 {
     printf("\n\tCódigo de solicitação: %d",elemento -> info.cod_solicitacao);
-    printf("\n\tCódigo de equipamento %s",elemento -> info.cod_equipamento);
-    printf("\n\tNome do equipamento %s", elemento -> info.nome_equipamento);
-    printf("\n\tPrioridade do equipamento %d",elemento -> info.prioridade);
-    printf("\n\tPeríodo do equipamento %d", elemento -> info.periodo);
+    printf("\n\tCódigo de equipamento: %s",elemento -> info.cod_equipamento);
+    printf("\n\tNome do equipamento: %s", elemento -> info.nome_equipamento);
+    printf("\n\tPrioridade do equipamento: %d",elemento -> info.prioridade);
+    printf("\n\tPeríodo do equipamento: %d dias\n", elemento -> info.periodo);
     
 }
 
@@ -275,7 +276,7 @@ void consulta_sol(lista *l)
     {
         int cod;
         no *aux;
-        printf("\n\tForneça o código de solicitação do equipamento desejado:");
+        printf("\n\tForneça o código de solicitação do equipamento desejado: ");
         scanf("%d",&cod);
         aux = BuscaLista(l,cod);
         if (aux == NULL)
@@ -293,33 +294,46 @@ void AlteraPriPe(lista *l, no *aux);
 
 void OPP(lista *l)
 {
-    int input,cod;
-    no *aux;
-    do
+    if(VerificaLista(l))
     {
-        printf("\t1 - Digite o código:\n");
-        printf("\t2 - Voltar ao menu principal\n:");
-        printf("\tDigite seu input:");
-        scanf("%d",&input);
-        if (input == 1)
+        printf("\nLista vazia!");
+    }
+    else
+    {
+        int input,cod;
+        no *aux;
+        do
         {
-            do{
-                printf("\nDigite o código de solicitação:");
-                scanf("%d",&cod);
-                aux = BuscaLista(l,cod);
-                if (aux == NULL)
-                {
-                    printf("\nCódigo não foi encontrado");
+            printf("\t1 - Digite o código:\n");
+            printf("\t2 - Voltar ao menu principal:\n");
+            printf("\tDigite sua opção: ");
+            scanf("%d",&input);
+            if (input == 1)
+            {
+                int flag = 1;
+                do{
+                    printf("\nDigite o código de solicitação, ou se quiser cancelar digite 0: ");
+                    scanf("%d",&cod);
+                    if(cod == 0){
+                        flag = 0;
+                        break;
+                    }
+                    aux = BuscaLista(l,cod);
+                    if (aux == NULL)
+                    {
+                        printf("\nCódigo não foi encontrado\n");
+                    }
+                }while(aux == NULL);
+                
+                if(flag == 1 && aux != NULL){
+                    AlteraPriPe(l,aux);
                 }
-            }while(aux == NULL);
-            
-            AlteraPriPe(l,aux);
-        }
-       if (input < 1 || input > 2) {
-            printf("Erro: Opção inválida! Digite 1 ou 2.\n");
-        }
-    } while (input != 2);
-    
+            }
+        if (input < 1 || input > 2) {
+                printf("Erro: Opção inválida! Digite 1 ou 2.\n");
+            }
+        } while (input != 2);
+    }
 }
 
 
@@ -350,10 +364,25 @@ void AlteraPriPe(lista *l, no *aux) {
                     } else if (troca == aux->info.prioridade) {
                         printf("Erro: Essa já é a prioridade atual!\n");
                     }
-                    
+
                 } while (troca < 1 || troca > 3 || troca == aux->info.prioridade);
                 
                 aux->info.prioridade = troca;
+
+                if (aux->info.prioridade == 1 && aux->info.periodo > 7) {
+                    printf("\nO período atual excede o limite permitido para a prioridade 1 (1-7 dias)!");
+                    do {
+                        printf("\nDigite o novo período (1-7 dias): ");
+                        scanf("%d", &aux->info.periodo);
+                    } while (aux->info.periodo < 1 || aux->info.periodo > 7);
+                } else if (aux->info.prioridade == 2 && aux->info.periodo > 15) {
+                    printf("\nO período atual excede o limite permitido para a prioridade 2 (1-15 dias)!");
+                    do {
+                        printf("\nDigite o novo período (1-15 dias): ");
+                        scanf("%d", &aux->info.periodo);
+                    } while (aux->info.periodo < 1 || aux->info.periodo > 15);
+                }
+
                 printf("Prioridade atualizada com sucesso!\n");
                 break;
 
@@ -497,14 +526,8 @@ void ExibirManun(lista *l)
             aux = aux -> prox;
         }
         ExibirTudo(l2);
-        no *apag;
-        while (l2->inicio != NULL)
-        {
-            apag = l2->inicio;
-            l2->inicio = l2->inicio->prox;
-            free(apag);
-        }
-        free(l2);
+        liberalista(l2);
+        
     }
 }
 
@@ -512,17 +535,18 @@ void ExibirManun(lista *l)
 
 //Função que printa todas as solicitações
 void ExibirTudo(lista *l)
-{
-    no *aux;
-    aux = l -> inicio;
-    while (aux != NULL)
-    {
-        PrintaInfo(aux);
-        aux = aux -> prox;
-        printf("\n");
+{   
+    if(VerificaLista(l)){
+        printf("\nErro: A lista está vazia!\n");
     }
-    
-
+    else{
+        no *aux;
+        aux = l -> inicio;
+        while (aux != NULL)
+        {
+            PrintaInfo(aux);
+            aux = aux -> prox;
+            printf("\n");
+        }
+    }
 }
-
-//Falta terminar o main, dar free no que for necessario, deixar o programa mais agradavel e corrigir bugs como um geral. 
