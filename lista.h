@@ -296,7 +296,8 @@ void OPP(lista *l)
 {
     if(VerificaLista(l))
     {
-        printf("\nLista vazia!");
+        printf("\nLista vazia!\n");
+        system("pause");
     }
     else
     {
@@ -304,6 +305,7 @@ void OPP(lista *l)
         no *aux;
         do
         {
+            system("cls");
             printf("\t1 - Digite o código:\n");
             printf("\t2 - Voltar ao menu principal:\n");
             printf("\tDigite sua opção: ");
@@ -329,8 +331,9 @@ void OPP(lista *l)
                     AlteraPriPe(l,aux);
                 }
             }
-        if (input < 1 || input > 2) {
+            if (input < 1 || input > 2) {
                 printf("Erro: Opção inválida! Digite 1 ou 2.\n");
+                system("pause");
             }
         } while (input != 2);
     }
@@ -340,11 +343,13 @@ void OPP(lista *l)
 void AlteraPriPe(lista *l, no *aux) {
     if (VerificaLista(l)) {
         printf("\nErro: A lista de solicitações está vazia!\n");
+        system("pause");
         return; 
     }
 
     int control, troca, a = 1;
     do {
+        system("cls");
         printf("\n--- Menu de Alteração ---");
         printf("\n1 - Alterar prioridade");
         printf("\n2 - Alterar período");
@@ -384,6 +389,7 @@ void AlteraPriPe(lista *l, no *aux) {
                 }
 
                 printf("Prioridade atualizada com sucesso!\n");
+                system("pause");
                 break;
 
             case 2:
@@ -403,6 +409,7 @@ void AlteraPriPe(lista *l, no *aux) {
                 
                 aux->info.periodo = troca;
                 printf("Período atualizado com sucesso!\n");
+                system("pause");
                 break;
 
             case 3:
@@ -435,6 +442,7 @@ void AlteraPriPe(lista *l, no *aux) {
                     aux->info.prioridade = nova_pri;
                     aux->info.periodo = novo_per;
                     printf("Prioridade e período atualizados com sucesso!\n");
+                    system("pause");
                     break; 
                     
                 } while (1); 
@@ -446,6 +454,7 @@ void AlteraPriPe(lista *l, no *aux) {
 
             default:
                 printf("Opção inválida!\n");
+                system("pause");
                 break;
         }
     } while (a != 0);

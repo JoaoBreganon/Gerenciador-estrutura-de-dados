@@ -16,6 +16,7 @@ int main()
     int escolha = 1;
     while(escolha != 0)
     {
+        system("cls");
         printf("\n====================================================================");
         printf("\n    GERENCIADOR DE MANUTENÇÃO DE EQUIPAMENTOS DE UM LABORATÓRIO     ");
         printf("\n====================================================================");
@@ -31,35 +32,46 @@ int main()
         scanf("%d",&escolha);
         switch(escolha){
         case 0:
-            printf("\nEncerrando...");
+            system("cls");
+            printf("\nEncerrando...\n");
             break;
         case 1:
+            system("cls");
             inserirSolicitacao(l);
             break;
 
         case 2:
+            system("cls");
             Remove(l);
             break;
 
         case 3:
+            system("cls");
             consulta_sol(l);
             break;
 
         case 4:
+            system("cls");
             OPP(l);
             break;
 
         case 5:
+            system("cls");
             ExibirManun(l);
             break;
 
         case 6:
+            system("cls");
             ExibirTudo(l);
             break;
             
         default:
-            printf("\n\tOpção inválida! Tente novamente.");
+            printf("\n\tOpção inválida! Tente novamente.\n");
             break;
+        }
+        if(escolha != 0 && escolha != 4){
+            printf("\n");
+            system("pause");
         }
     }
     liberalista(l);
