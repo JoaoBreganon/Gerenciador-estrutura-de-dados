@@ -156,10 +156,10 @@ void inserirSolicitacao(lista* l) {
             } else {
                 if (excesso == 0 && strlen(aux.cod_equipamento) == 6) {
                     for (int i = 0; i < 3; i++) {
-                        if (isalpha((unsigned char)aux.cod_equipamento[i])) contletter++;
+                        if (isalpha(aux.cod_equipamento[i])) contletter++;
                     }
                     for (int i = 3; i < 6; i++) {
-                        if (isdigit((unsigned char)aux.cod_equipamento[i])) contnum++;
+                        if (isdigit(aux.cod_equipamento[i])) contnum++;
                     }
                 }
 
