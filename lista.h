@@ -104,7 +104,7 @@ void inserirSolicitacao(lista* l) {
     int cancelar = 0;
 
     do {
-        flag = 1; // Reseta a flag a cada nova tentativa
+        flag = 1;
         percorre = l->inicio;
         
         printf("Digite o código de solicitação (1000 a 9999) ou -1 para cancelar: ");
@@ -118,7 +118,7 @@ void inserirSolicitacao(lista* l) {
                 if (aux.cod_solicitacao == percorre->info.cod_solicitacao) {
                     flag = 0; // Código repetido encontrado
                     printf("Erro: Este código já existe!\n");
-                    break; // Pode parar a busca, já achou repetido
+                    break; 
                 }
                 percorre = percorre->prox;
             }
@@ -129,7 +129,7 @@ void inserirSolicitacao(lista* l) {
             }
         }
         
-    // Repete se não cancelou E (fora do intervalo OU se a flag for 0)
+    
     } while (cancelar == 0 && ((aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999) || flag == 0));
     
     if (cancelar == 0) {
