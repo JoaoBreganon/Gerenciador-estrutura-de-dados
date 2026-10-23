@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 typedef struct manutencao{
     int cod_solicitacao;
     char cod_equipamento[7];
@@ -20,6 +25,16 @@ void limpar_buffer() {
     while ((c = getchar()) != '\n' && c != EOF);
 }   
 
+//  função para ler inteiros sem travar caso digite letras
+int ler_inteiro() {
+    int valor;
+    while (scanf("%d", &valor) != 1) {
+        limpar_buffer(); // Remove as letras que travariam o buffer
+        printf("Erro: Entrada inválida! Digite apenas números: ");
+    }
+    limpar_buffer(); 
+    return valor;
+}
 
 lista* Inicialista(){
     return NULL;
@@ -77,108 +92,168 @@ no *InsereOrdenado(no *antigo,Manutencao var )
         return antigo;
     }
     
-
     aux->prox= novo;
     novo->prox= aux1;
     return antigo;
-
 }
 
 void inserirSolicitacao(lista* l) {
     Manutencao aux;
     no* percorre;
     int flag;
+    int cancelar = 0;
 
     do {
         flag = 1; // Reseta a flag a cada nova tentativa
         percorre = l->inicio;
         
-        printf("Digite o código de solicitação (1000 a 9999): ");
-        scanf("%d", &aux.cod_solicitacao);
+        printf("Digite o código de solicitação (1000 a 9999) ou -1 para cancelar: ");
+        aux.cod_solicitacao = ler_inteiro();
         
-        // Verifica se o código já existe na lista
-        while (percorre != NULL) {
-            if (aux.cod_solicitacao == percorre->info.cod_solicitacao) {
-                flag = 0; // Código repetido encontrado
-                printf("Erro: Este código já existe!\n");
-                break; // Pode parar a busca, já achou repetido
+        if (aux.cod_solicitacao == -1) {
+            cancelar = 1;
+        } else {
+            // Verifica se o código já existe na lista
+            while (percorre != NULL) {
+                if (aux.cod_solicitacao == percorre->info.cod_solicitacao) {
+                    flag = 0; // Código repetido encontrado
+                    printf("Erro: Este código já existe!\n");
+                    break; // Pode parar a busca, já achou repetido
+                }
+                percorre = percorre->prox;
             }
-            percorre = percorre->prox;
+            
+            // Avisa se estiver fora do limite
+            if (aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999) {
+                printf("Erro: O código deve estar entre 1000 e 9999!\n");
+            }
         }
         
-        // Avisa se estiver fora do limite
-        if (aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999) {
-            printf("Erro: O código deve estar entre 1000 e 9999!\n");
-        }
+    // Repete se não cancelou E (fora do intervalo OU se a flag for 0)
+    } while (cancelar == 0 && ((aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999) || flag == 0));
+    
+    if (cancelar == 0) {
+        int contletter, contnum, excesso;
         
-    // Repete se fora do intervalo OU se a flag for 0 (repetido)
-    } while ((aux.cod_solicitacao < 1000 || aux.cod_solicitacao > 9999) || flag == 0);
-    
-    int contletter,contnum;
-    
-    do {
-        contletter = 0;
-        contnum = 0;
-        limpar_buffer();
-        printf("\nDigite o código de equipamento (ex: AAA111): ");
-        fgets(aux.cod_equipamento, sizeof(aux.cod_equipamento), stdin);
-        aux.cod_equipamento[strcspn(aux.cod_equipamento, "\n")] = '\0';
-        
-        for (int i = 0; i < 3; i++) {
-            if (isalpha(aux.cod_equipamento[i])) contletter++;
-        }
-        for (int i = 3; i < 6; i++) {
-            if (isdigit(aux.cod_equipamento[i])) contnum++;
-        }
+        do {
+            contletter = 0;
+            contnum = 0;
+            excesso = 0;
+            
+            printf("\nDigite o código de equipamento (ex: AAA111) ou -1 para cancelar: ");
+            fgets(aux.cod_equipamento, sizeof(aux.cod_equipamento), stdin);
+            
+            // Se não achou o '\n', o usuário digitou mais de 6 caracteres; limpa o que sobrou
+            if (strchr(aux.cod_equipamento, '\n') == NULL) {
+                limpar_buffer();
+                excesso = 1;
+            } else {
+                aux.cod_equipamento[strcspn(aux.cod_equipamento, "\n")] = '\0';
+            }
+            
+            if (strcmp(aux.cod_equipamento, "-1") == 0 && excesso == 0) {
+                cancelar = 1;
+            } else {
+                if (excesso == 0 && strlen(aux.cod_equipamento) == 6) {
+                    for (int i = 0; i < 3; i++) {
+                        if (isalpha((unsigned char)aux.cod_equipamento[i])) contletter++;
+                    }
+                    for (int i = 3; i < 6; i++) {
+                        if (isdigit((unsigned char)aux.cod_equipamento[i])) contnum++;
+                    }
+                }
 
-        if (contnum != 3 || contletter != 3) {
-            printf("Erro: O formato deve conter exatamente 3 letras seguidas de 3 números!\n");
+                if (contnum != 3 || contletter != 3 || excesso == 1) {
+                    printf("Erro: O formato deve conter exatamente 3 letras seguidas de 3 números!\n");
+                }
+            }
+        } while (cancelar == 0 && (contnum != 3 || contletter != 3 || excesso == 1));
+
+        if (cancelar == 0) {
+            do {
+                printf("\nDigite o nome do equipamento ou -1 para cancelar: ");
+                fgets(aux.nome_equipamento, sizeof(aux.nome_equipamento), stdin);
+                
+                if (strchr(aux.nome_equipamento, '\n') == NULL) {
+                    limpar_buffer();
+                } else {
+                    aux.nome_equipamento[strcspn(aux.nome_equipamento, "\n")] = '\0';
+                }
+
+                if (strlen(aux.nome_equipamento) == 0) {
+                    printf("Erro: O nome do equipamento não pode ser vazio!\n");
+                }
+            } while (strlen(aux.nome_equipamento) == 0);
+            
+            if (strcmp(aux.nome_equipamento, "-1") == 0) {
+                cancelar = 1;
+            } else {
+                do {
+                    printf("\nDigite a prioridade (1 a 3) ou -1 para cancelar: ");
+                    aux.prioridade = ler_inteiro();
+                    
+                    if (aux.prioridade == -1) {
+                        cancelar = 1;
+                    } else if (aux.prioridade < 1 || aux.prioridade > 3) {
+                        printf("Erro: A prioridade deve estar entre 1 e 3!\n");
+                    }
+                } while (cancelar == 0 && (aux.prioridade < 1 || aux.prioridade > 3));
+
+                if (cancelar == 0) {
+                    switch(aux.prioridade)
+                    {
+                    case 1:
+                        do{
+                            printf("\nDigite o período necessário para manutenção (1-7 dias) ou -1 para cancelar: ");
+                            aux.periodo = ler_inteiro();
+                            if (aux.periodo == -1) {
+                                cancelar = 1;
+                            } else if (aux.periodo < 1 || aux.periodo > 7) {
+                                printf("Erro: Para prioridade 1, o período deve ser entre 1 e 7 dias!\n");
+                            }
+                        }while(cancelar == 0 && (aux.periodo<1 || aux.periodo>7));
+                        break;
+
+                    case 2:
+                        do{
+                            printf("\nDigite o período necessário para manutenção (1-15 dias) ou -1 para cancelar: ");
+                            aux.periodo = ler_inteiro();
+                            if (aux.periodo == -1) {
+                                cancelar = 1;
+                            } else if (aux.periodo < 1 || aux.periodo > 15) {
+                                printf("Erro: Para prioridade 2, o período deve ser entre 1 e 15 dias!\n");
+                            }
+                        }while(cancelar == 0 && (aux.periodo<1 || aux.periodo>15));
+                        break;
+                    
+                    case 3:
+                        do{
+                            printf("\nDigite o período necessário para manutenção (1-20 dias) ou -1 para cancelar: ");
+                            aux.periodo = ler_inteiro();
+                            if (aux.periodo == -1) {
+                                cancelar = 1;
+                            } else if (aux.periodo < 1 || aux.periodo > 20) {
+                                printf("Erro: Para prioridade 3, o período deve ser entre 1 e 20 dias!\n");
+                            }
+                        }while(cancelar == 0 && (aux.periodo<1 || aux.periodo>20));
+                        break;
+                    
+                    default:
+                        break;
+                    }  
+                    
+                    if (cancelar == 0) {
+                        l->inicio = InsereOrdenado(l->inicio,aux);
+                        printf("\nSolicitação cadastrada com sucesso!\n");
+                    }
+                }
+            }
         }
-    } while (contnum != 3 || contletter != 3);
+    }
 
-    limpar_buffer();
-    printf("\nDigite o nome do equipamento: ");
-    fgets(aux.nome_equipamento, sizeof(aux.nome_equipamento), stdin);
-    aux.nome_equipamento[strcspn(aux.nome_equipamento,"\n")]= '\0';
-    
-    do {
-        printf("\nDigite a prioridade (1 a 3): ");
-        scanf("%d", &aux.prioridade);
-        
-        if (aux.prioridade < 1 || aux.prioridade > 3) {
-            printf("Erro: A prioridade deve estar entre 1 e 3!\n");
-        }
-    } while (aux.prioridade < 1 || aux.prioridade > 3);
-
-    switch(aux.prioridade)
-    {
-    case 1:
-        do{
-            printf("\nDigite o período necessário para manutenção (1-7 dias): ");
-            scanf("%d",&aux.periodo);
-        }while(aux.periodo<1 || aux.periodo>7);
-        break;
-
-    case 2:
-        do{
-            printf("\nDigite o período necessário para manutenção (1-15 dias): ");
-            scanf("%d",&aux.periodo);
-        }while(aux.periodo<1 || aux.periodo>15);
-        break;
-    
-    case 3:
-        do{
-            printf("\nDigite o período necessário para manutenção (1-20 dias): ");
-            scanf("%d",&aux.periodo);
-        }while(aux.periodo<1 || aux.periodo>20);
-        break;
-    
-    default:
-        break;
-    }  
-    
-    
-    l->inicio = InsereOrdenado(l->inicio,aux);
+    if (cancelar == 1) {
+        printf("\nOperação cancelada!\n");
+    }
 }
 
 //Função de remoção de um elemento na lista baseado no código de solicitação, utilizando a lógica de remoção em qualquer lugar
@@ -188,70 +263,73 @@ void Remove(lista* l){
     }
     else{
         int cod,flag=0;
-        printf("\nDigite o código de solicitação que deseja remover: ");
-        scanf("%d",&cod);
-        no *aux = NULL, *aux1,*apag;
-        aux1 = l->inicio;
-        while (aux1 != NULL && flag != 1)
-        {
-           if(aux1->info.cod_solicitacao == cod)
-           {
-            flag = 1;
-            break;
-           }
-           aux = aux1;
-           aux1 = aux1 -> prox;
+        printf("\nDigite o código de solicitação que deseja remover (ou -1 para cancelar): ");
+        cod = ler_inteiro();
+        
+        if (cod == -1) {
+            printf("\nOperação cancelada!\n");
         }
-        if (flag == 0)
-        {
-            printf("\nO código não foi encontrado!\n");
-        }
-        else
-        {
-            if(aux == NULL){
-                apag = aux1;
-                aux1 = aux1->prox;
-                l->inicio = aux1;
-                free(apag);
+        else {
+            no *aux = NULL, *aux1,*apag;
+            aux1 = l->inicio;
+            while (aux1 != NULL && flag != 1)
+            {
+               if(aux1->info.cod_solicitacao == cod)
+               {
+                flag = 1;
+                break;
+               }
+               aux = aux1;
+               aux1 = aux1 -> prox;
             }
-            else{
-                if (flag == 1)
-                {
-                    apag= aux1;
-                    aux1 = aux1 -> prox;
-                    aux->prox= aux1;
-                    free(apag); 
+            if (flag == 0)
+            {
+                printf("\nO código não foi encontrado!\n");
+            }
+            else
+            {
+                if(aux == NULL){
+                    apag = aux1;
+                    aux1 = aux1->prox;
+                    l->inicio = aux1;
+                    free(apag);
                 }
-            } 
-            printf("\nSolicitação removida com sucesso!\n");
+                else{
+                    if (flag == 1)
+                    {
+                        apag= aux1;
+                        aux1 = aux1 -> prox;
+                        aux->prox= aux1;
+                        free(apag); 
+                    }
+                } 
+                printf("\nSolicitação removida com sucesso!\n");
+            }
         }
     }
 }
 
 //Função de Buscar um elemento na lista baseado no código passado por parâmetro, retornando o ponteiro apontando pra aquele elemento
-no *BuscaLista(lista *l,int cod)
+no *BuscaLista(lista *l, int cod)
 {
-    if (l == NULL || l -> inicio == NULL)
+    if (l == NULL || l->inicio == NULL)
     {
-        printf("\n\tLista vazia!");
         return NULL;
     }
     else
     {
         no *aux;
-        aux = l -> inicio;
+        aux = l->inicio;
         while (aux != NULL && aux->info.cod_solicitacao != cod)
         {
-            aux = aux -> prox;
+            aux = aux->prox;
         }
-        if( aux != NULL && aux -> info.cod_solicitacao == cod)
+        if (aux != NULL && aux->info.cod_solicitacao == cod)
         {
             return aux;
         }
         return NULL; 
     }
-    
-    
 }
 
 //Função de Printar todas as informações de um elemento, utilizando um ponteiro apontando pra ele
@@ -262,7 +340,6 @@ void PrintaInfo(no *elemento)
     printf("\n\tNome do equipamento: %s", elemento -> info.nome_equipamento);
     printf("\n\tPrioridade do equipamento: %d",elemento -> info.prioridade);
     printf("\n\tPeríodo do equipamento: %d dias\n", elemento -> info.periodo);
-    
 }
 
 //Consulta uma solicitação baseado no seu código de solicitação, utilizando conjuntamente as funções de BuscaLista e PrintaInfo
@@ -276,16 +353,24 @@ void consulta_sol(lista *l)
     {
         int cod;
         no *aux;
-        printf("\n\tForneça o código de solicitação do equipamento desejado: ");
-        scanf("%d",&cod);
-        aux = BuscaLista(l,cod);
-        if (aux == NULL)
+        printf("\n\tForneça o código de solicitação do equipamento desejado (ou -1 para cancelar): ");
+        cod = ler_inteiro();
+        
+        if (cod == -1)
         {
-           printf("\n\tO código fornecido não existe.");
+            printf("\n\tOperação cancelada!\n");
         }
         else
         {
-            PrintaInfo(aux);
+            aux = BuscaLista(l,cod);
+            if (aux == NULL)
+            {
+               printf("\n\tO código fornecido não existe.\n");
+            }
+            else
+            {
+                PrintaInfo(aux);
+            }
         }
     }
 }
@@ -307,16 +392,16 @@ void OPP(lista *l)
         {
             system("cls");
             printf("\t1 - Digite o código:\n");
-            printf("\t2 - Voltar ao menu principal:\n");
+            printf("\t2 - Voltar ao menu principal (ou -1):\n");
             printf("\tDigite sua opção: ");
-            scanf("%d",&input);
+            input = ler_inteiro();
             if (input == 1)
             {
                 int flag = 1;
                 do{
-                    printf("\nDigite o código de solicitação, ou se quiser cancelar digite 0: ");
-                    scanf("%d",&cod);
-                    if(cod == 0){
+                    printf("\nDigite o código de solicitação, ou se quiser cancelar digite -1 (ou 0): ");
+                    cod = ler_inteiro();
+                    if(cod == 0 || cod == -1){
                         flag = 0;
                         break;
                     }
@@ -331,133 +416,191 @@ void OPP(lista *l)
                     AlteraPriPe(l,aux);
                 }
             }
-            if (input < 1 || input > 2) {
+            if ((input < 1 || input > 2) && input != -1) {
                 printf("Erro: Opção inválida! Digite 1 ou 2.\n");
                 system("pause");
             }
-        } while (input != 2);
+        } while (input != 2 && input != -1);
     }
 }
-
 
 void AlteraPriPe(lista *l, no *aux) {
     if (VerificaLista(l)) {
         printf("\nErro: A lista de solicitações está vazia!\n");
         system("pause");
-        return; 
-    }
+    } 
+    else {
+        int control, troca, a = 1;
+        int cancelar;
+        int max_dias;
+        
+        do {
+            cancelar = 0;
+            system("cls");
+            printf("\n--- Menu de Alteração ---");
+            printf("\n1 - Alterar prioridade");
+            printf("\n2 - Alterar período");
+            printf("\n3 - Alterar prioridade e período");
+            printf("\n4 - Sair (ou -1)");
+            printf("\nDigite sua opção: ");
+            control = ler_inteiro();
 
-    int control, troca, a = 1;
-    do {
-        system("cls");
-        printf("\n--- Menu de Alteração ---");
-        printf("\n1 - Alterar prioridade");
-        printf("\n2 - Alterar período");
-        printf("\n3 - Alterar prioridade e período");
-        printf("\n4 - Sair");
-        printf("\nDigite sua opção: ");
-        scanf("%d", &control);
-
-        switch (control) {
-            case 1:
-                do {
-                    printf("\nDigite a nova prioridade (1-3): ");
-                    scanf("%d", &troca);
-                    
-                    if (troca < 1 || troca > 3) {
-                        printf("Erro: Prioridade fora do intervalo permitido (1 a 3)!\n");
-                    } else if (troca == aux->info.prioridade) {
-                        printf("Erro: Essa já é a prioridade atual!\n");
-                    }
-
-                } while (troca < 1 || troca > 3 || troca == aux->info.prioridade);
-                
-                aux->info.prioridade = troca;
-
-                if (aux->info.prioridade == 1 && aux->info.periodo > 7) {
-                    printf("\nO período atual excede o limite permitido para a prioridade 1 (1-7 dias)!");
+            switch (control) {
+                case 1:
                     do {
-                        printf("\nDigite o novo período (1-7 dias): ");
-                        scanf("%d", &aux->info.periodo);
-                    } while (aux->info.periodo < 1 || aux->info.periodo > 7);
-                } else if (aux->info.prioridade == 2 && aux->info.periodo > 15) {
-                    printf("\nO período atual excede o limite permitido para a prioridade 2 (1-15 dias)!");
-                    do {
-                        printf("\nDigite o novo período (1-15 dias): ");
-                        scanf("%d", &aux->info.periodo);
-                    } while (aux->info.periodo < 1 || aux->info.periodo > 15);
-                }
+                        printf("\nDigite a nova prioridade (1-3) ou -1 para cancelar: ");
+                        troca = ler_inteiro();
+                        
+                        if (troca == -1) {
+                            cancelar = 1;
+                        } else if (troca < 1 || troca > 3) {
+                            printf("Erro: Prioridade fora do intervalo permitido (1 a 3)!\n");
+                        } else if (troca == aux->info.prioridade) {
+                            printf("Erro: Essa já é a prioridade atual!\n");
+                        }
 
-                printf("Prioridade atualizada com sucesso!\n");
-                system("pause");
-                break;
+                    } while (cancelar == 0 && (troca < 1 || troca > 3 || troca == aux->info.prioridade));
+                    
+                    if (cancelar == 0) {
+                        int novo_per = aux->info.periodo;
+                        
+                        if (troca == 1 && aux->info.periodo > 7) {
+                            printf("\nO período atual excede o limite permitido para a prioridade 1 (1-7 dias)!");
+                            do {
+                                printf("\nDigite o novo período (1-7 dias) ou -1 para cancelar: ");
+                                novo_per = ler_inteiro();
+                                if (novo_per == -1) {
+                                    cancelar = 1;
+                                } else if (novo_per < 1 || novo_per > 7) {
+                                    printf("Erro: O período deve ser entre 1 e 7 dias!\n");
+                                }
+                            } while (cancelar == 0 && (novo_per < 1 || novo_per > 7));
+                        } else if (troca == 2 && aux->info.periodo > 15) {
+                            printf("\nO período atual excede o limite permitido para a prioridade 2 (1-15 dias)!");
+                            do {
+                                printf("\nDigite o novo período (1-15 dias) ou -1 para cancelar: ");
+                                novo_per = ler_inteiro();
+                                if (novo_per == -1) {
+                                    cancelar = 1;
+                                } else if (novo_per < 1 || novo_per > 15) {
+                                    printf("Erro: O período deve ser entre 1 e 15 dias!\n");
+                                }
+                            } while (cancelar == 0 && (novo_per < 1 || novo_per > 15));
+                        }
 
-            case 2:
-                do {
-                    int max_dias = (aux->info.prioridade == 1) ? 7 : (aux->info.prioridade == 2) ? 15 : 20;
-                    
-                    printf("\nDigite o novo período (1-%d dias): ", max_dias);
-                    scanf("%d", &troca);
-                    
-                    if (troca < 1 || troca > max_dias) {
-                        printf("Erro: Período fora do limite permitido para a prioridade %d!\n", aux->info.prioridade);
-                    } else if (troca == aux->info.periodo) {
-                        printf("Erro: Esse já é o período atual!\n");
+                        if (cancelar == 0) {
+                            aux->info.prioridade = troca;
+                            aux->info.periodo = novo_per;
+                            printf("Prioridade atualizada com sucesso!\n");
+                        } else {
+                            printf("Alteração cancelada!\n");
+                        }
+                    } else {
+                        printf("Alteração cancelada!\n");
                     }
-                    
-                } while (troca < 1 || troca > ((aux->info.prioridade == 1) ? 7 : (aux->info.prioridade == 2) ? 15 : 20) || troca == aux->info.periodo);
-                
-                aux->info.periodo = troca;
-                printf("Período atualizado com sucesso!\n");
-                system("pause");
-                break;
-
-            case 3:
-                do {
-                    int nova_pri, novo_per, max_dias;
-                    
-                    printf("\nDigite a nova prioridade (1-3): ");
-                    scanf("%d", &nova_pri);
-                    
-                    if (nova_pri < 1 || nova_pri > 3) {
-                        printf("Erro: Prioridade fora do intervalo (1 a 3)!\n");
-                        continue; 
-                    }
-
-                    max_dias = (nova_pri == 1) ? 7 : (nova_pri == 2) ? 15 : 20;
-                    
-                    printf("Digite o novo período (1-%d dias): ", max_dias);
-                    scanf("%d", &novo_per);
-
-                    if (novo_per < 1 || novo_per > max_dias) {
-                        printf("Erro: Período fora do limite permitido para essa prioridade!\n");
-                        continue; 
-                    }
-
-                    if (nova_pri == aux->info.prioridade && novo_per == aux->info.periodo) {
-                        printf("Erro: A prioridade e o período informados são exatamente iguais aos atuais!\n");
-                        continue; 
-                    }
-
-                    aux->info.prioridade = nova_pri;
-                    aux->info.periodo = novo_per;
-                    printf("Prioridade e período atualizados com sucesso!\n");
                     system("pause");
-                    break; 
+                    break;
+
+                case 2:
+                    if (aux->info.prioridade == 1) {
+                        max_dias = 7;
+                    } else if (aux->info.prioridade == 2) {
+                        max_dias = 15;
+                    } else {
+                        max_dias = 20;
+                    }
+
+                    do {
+                        printf("\nDigite o novo período (1-%d dias) ou -1 para cancelar: ", max_dias);
+                        troca = ler_inteiro();
+                        
+                        if (troca == -1) {
+                            cancelar = 1;
+                        } else if (troca < 1 || troca > max_dias) {
+                            printf("Erro: Período fora do limite permitido para a prioridade %d!\n", aux->info.prioridade);
+                        } else if (troca == aux->info.periodo) {
+                            printf("Erro: Esse já é o período atual!\n");
+                        }
+                        
+                    } while (cancelar == 0 && (troca < 1 || troca > max_dias || troca == aux->info.periodo));
                     
-                } while (1); 
-                break;
+                    if (cancelar == 0) {
+                        aux->info.periodo = troca;
+                        printf("Período atualizado com sucesso!\n");
+                    } else {
+                        printf("Alteração cancelada!\n");
+                    }
+                    system("pause");
+                    break;
 
-            case 4:
-                a = 0;
-                break;
+                case 3:
+                    do {
+                        int nova_pri, novo_per;
+                        
+                        printf("\nDigite a nova prioridade (1-3) ou -1 para cancelar: ");
+                        nova_pri = ler_inteiro();
+                        
+                        if (nova_pri == -1) {
+                            cancelar = 1;
+                            break;
+                        }
 
-            default:
-                printf("Opção inválida!\n");
-                system("pause");
-                break;
-        }
-    } while (a != 0);
+                        if (nova_pri < 1 || nova_pri > 3) {
+                            printf("Erro: Prioridade fora do intervalo (1 a 3)!\n");
+                            continue; 
+                        }
+
+                        if (nova_pri == 1) {
+                            max_dias = 7;
+                        } else if (nova_pri == 2) {
+                            max_dias = 15;
+                        } else {
+                            max_dias = 20;
+                        }
+                        
+                        printf("Digite o novo período (1-%d dias) ou -1 para cancelar: ", max_dias);
+                        novo_per = ler_inteiro();
+
+                        if (novo_per == -1) {
+                            cancelar = 1;
+                            break;
+                        }
+
+                        if (novo_per < 1 || novo_per > max_dias) {
+                            printf("Erro: Período fora do limite permitido para essa prioridade!\n");
+                            continue; 
+                        }
+
+                        if (nova_pri == aux->info.prioridade && novo_per == aux->info.periodo) {
+                            printf("Erro: A prioridade e o período informados são exatamente iguais aos atuais!\n");
+                            continue; 
+                        }
+
+                        aux->info.prioridade = nova_pri;
+                        aux->info.periodo = novo_per;
+                        printf("Prioridade e período atualizados com sucesso!\n");
+                        break; 
+                        
+                    } while (1); 
+                    
+                    if (cancelar == 1) {
+                        printf("Alteração cancelada!\n");
+                    }
+                    system("pause");
+                    break;
+
+                case 4:
+                case -1:
+                    a = 0;
+                    break;
+
+                default:
+                    printf("Opção inválida!\n");
+                    system("pause");
+                    break;
+            }
+        } while (a != 0);
+    }
 }
 
 //Essa função ordena a lista auxiliar com base na forma que as manutenções tem de ser exibidas
@@ -475,21 +618,18 @@ no *InsereManun(no *aux, no *antigo)
         if (novo -> info.prioridade < aux2 -> info.prioridade)
         {
             flag = 1;
-        
         }
         else if (novo -> info.prioridade == aux2 -> info.prioridade)
         {
             if (novo -> info.periodo < aux2 -> info.periodo )
             {
                 flag = 1;
-
             }
             else if (novo -> info.periodo == aux2 -> info.periodo)
             {
                 if (novo -> info.cod_solicitacao < aux2 -> info.cod_solicitacao)
                 {
                     flag = 1;
-                    
                 }
             }
         }
@@ -512,11 +652,9 @@ no *InsereManun(no *aux, no *antigo)
         aux1 -> prox = novo;
     }
     return antigo;
-
 }
 
 void ExibirTudo(lista *l);
-
 
 //Essa função primeiramente recebe a lista original, cria uma nova e chama a outra função pra ordenar essa nova lista baseado nos parâmetros, e por ultimo printa e da free nela
 void ExibirManun(lista *l)
@@ -536,11 +674,8 @@ void ExibirManun(lista *l)
         }
         ExibirTudo(l2);
         liberalista(l2);
-        
     }
 }
-
-
 
 //Função que printa todas as solicitações
 void ExibirTudo(lista *l)
